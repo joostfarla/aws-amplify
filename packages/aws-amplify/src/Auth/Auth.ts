@@ -230,7 +230,7 @@ export default class AuthClass {
 
         const user = this.createCognitoUser(username);
         return new Promise((resolve, reject) => {
-            
+
             user.confirmRegistration(code, true, function(err, data) {
                 if (err) { reject(err); } else { resolve(data); }
             });
@@ -346,7 +346,7 @@ export default class AuthClass {
             });
         });
     }
-    
+
     /**
      * set preferred MFA method
      * @param {CognitoUser} user - the current Cognito user
@@ -531,7 +531,7 @@ export default class AuthClass {
                         logger.debug('confirm signIn failure', err);
                         reject(err);
                     }
-                }, 
+                },
                 mfaType);
         });
     }
@@ -561,6 +561,7 @@ export default class AuthClass {
                 },
                 onFailure: (err) => {
                     logger.debug('completeNewPassword failure', err);
+                    dispatchAuthEvent('completeNewPassword_failure', err);
                     reject(err);
                 },
                 mfaRequired: (challengeName, challengeParam) => {
@@ -700,7 +701,7 @@ export default class AuthClass {
         } catch (e) {
             logger.debug('cannot load federated user from cache');
         }
-        
+
         if (federatedUser) {
             this.user = federatedUser;
             logger.debug('get current authenticated federated user', this.user);
@@ -727,9 +728,9 @@ export default class AuthClass {
         if (!this.userPool) { return Promise.reject('No userPool'); }
         if (Platform.isReactNative) {
             return this.getSyncedUser().then(user => {
-                if (!user) { 
+                if (!user) {
                     logger.debug('Failed to get user from user pool');
-                    return Promise.reject('No current user'); 
+                    return Promise.reject('No current user');
                 }
                 return that.userSession(user);
             });
@@ -737,7 +738,7 @@ export default class AuthClass {
             user = this.userPool.getCurrentUser();
             if (!user) {
                 logger.debug('Failed to get user from user pool');
-                return Promise.reject('No current user'); 
+                return Promise.reject('No current user');
             }
             return this.userSession(user);
         }
@@ -752,9 +753,9 @@ export default class AuthClass {
         return new Promise((resolve, reject) => {
             logger.debug('Getting the session from this user:', user);
             user.getSession(function(err, session) {
-                if (err) { 
+                if (err) {
                     logger.debug('Failed to get the session from user', user);
-                    reject(err); 
+                    reject(err);
                 } else {
                     logger.debug('Succeed to get the user session', session);
                     // check if session is expired
@@ -771,7 +772,7 @@ export default class AuthClass {
                         });
                     } else {
                         logger.debug('Session is valid, directly return this session');
-                        resolve(session); 
+                        resolve(session);
                     }
                 }
             });
@@ -962,7 +963,7 @@ export default class AuthClass {
             });
             credentials.clearCachedId();
         }
-        
+
         // clear federatedInfo
         await Cache.removeItem('federatedInfo');
         await Cache.removeItem('federatedUser');
@@ -1103,7 +1104,7 @@ export default class AuthClass {
             }).catch(e => {
                 rej(e);
             });
-        });    
+        });
     }
 
     /**
@@ -1204,7 +1205,7 @@ export default class AuthClass {
         return this._loadCredentials(credentials, 'userPool', true, null);
     }
 
-    
+
     private _setCredentialsFromFederation(params) {
         const { provider, token, user, expires_at } = params;
         const domains = {
